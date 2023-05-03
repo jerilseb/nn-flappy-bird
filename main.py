@@ -14,10 +14,17 @@ def update_data_labels(gameDisplay, dt, game_time, num_iterations, num_alive, fo
     y_pos = 10
     gap = 20
     x_pos = 10
-    y_pos = update_label(round(1000/dt,2), 'FPS', font, x_pos, y_pos + gap, gameDisplay)
-    y_pos = update_label(round(game_time/1000,2),'Game time', font, x_pos, y_pos + gap, gameDisplay)
-    y_pos = update_label(num_iterations,'Iteration', font, x_pos, y_pos + gap, gameDisplay)
-    y_pos = update_label(num_alive,'Alive', font, x_pos, y_pos + gap, gameDisplay)
+    y_pos = update_label(
+        round(1000 / dt, 2), "FPS", font, x_pos, y_pos + gap, gameDisplay
+    )
+    y_pos = update_label(
+        round(game_time / 1000, 2), "Game time", font, x_pos, y_pos + gap, gameDisplay
+    )
+    y_pos = update_label(
+        num_iterations, "Iteration", font, x_pos, y_pos + gap, gameDisplay
+    )
+    y_pos = update_label(num_alive, "Alive", font, x_pos, y_pos + gap, gameDisplay)
+
 
 def run_game():
     pygame.init()
