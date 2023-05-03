@@ -1,18 +1,20 @@
 import pygame
 from defs import *
 from pipe import PipeCollection
+from bird import Bird
 
 def update_label(data, title, font, x, y, gameDisplay):
     label = font.render(f'{title}: {data}', 1, DATA_FONT_COLOR)
     gameDisplay.blit(label, (x, y))
     return y
 
-def update_data_labels(gameDisplay, dt, game_time, font):
+def update_data_labels(gameDisplay, dt, game_time, num_iterations, font):
     y_pos = 10
     gap = 20
     x_pos = 10
     y_pos = update_label(round(1000/dt), 'FPS', font, x_pos, y_pos + gap, gameDisplay)
     y_pos = update_label(round(game_time/1000),'Game Time', font, x_pos, y_pos + gap, gameDisplay)
+    y_pos = update_label(num_iterations,'Iterations', font, x_pos, y_pos + gap, gameDisplay)
 
 
 def run_game():
@@ -27,10 +29,12 @@ def run_game():
 
     pipes = PipeCollection(gameDisplay)
     pipes.create_new_set()
+    bird = Bird(gameDisplay)
 
     clock = pygame.time.Clock()
     dt = 0
     game_time = 0
+    num_iterations = 1
 
     while running:
 
@@ -44,11 +48,22 @@ def run_game():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
-                running = False
+                if event.key == pygame.K_SPACE:
+                    bird.jump()
+                else:
+                    running = False
 
-        update_data_labels(gameDisplay, dt, game_time, label_font)
         pipes.update(dt)
+        bird.update(dt, pipes.pipes)
 
+        if bird.state == BIRD_DEAD:
+            pipes.create_new_set()
+            game_time = 0
+            bird = Bird(gameDisplay)
+            num_iterations += 1
+
+
+        update_data_labels(gameDisplay, dt, game_time, num_iterations, label_font)
         pygame.display.update()
 
 
