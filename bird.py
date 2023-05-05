@@ -128,6 +128,7 @@ class BirdCollection:
                 num_alive += 1
 
         return num_alive
+
     
     def evolve_population(self):
         for b in self.birds:
