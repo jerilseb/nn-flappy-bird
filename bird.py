@@ -4,17 +4,25 @@ from defs import *
 from nnet import Nnet
 import numpy as np
 
+
 class Bird:
+    id = 1
+
     def __init__(self, gameDisplay):
+        self.id = Bird.id
         self.gameDisplay = gameDisplay
         self.state = BIRD_ALIVE
         self.img = pygame.image.load(BIRD_FILENAME)
+        self.text = pygame.font.SysFont("monospace", BIRD_FONT_SIZE).render(
+            str(self.id), False, BIRD_FONT_COLOR
+        )
         self.rect = self.img.get_rect()
         self.speed = 0
         self.fitness = 0
         self.time_lived = 0
         self.nnet = Nnet(NNET_INPUTS, NNET_HIDDEN, NNET_OUTPUTS)
         self.set_position(BIRD_START_X, BIRD_START_Y)
+        Bird.id += 1
 
     def reset(self):
         self.state = BIRD_ALIVE
@@ -49,6 +57,13 @@ class Bird:
 
     def draw(self):
         self.gameDisplay.blit(self.img, self.rect)
+        self.gameDisplay.blit(
+            self.text,
+            (
+                self.rect.left + 10,
+                self.rect.centery - BIRD_FONT_SIZE / 2,
+            ),
+        )
 
     def check_status(self, pipes):
         if self.rect.bottom > DISPLAY_H:
@@ -101,7 +116,7 @@ class Bird:
         ]
 
         return inputs
-    
+
     @staticmethod
     def create_offspring(b1, b2, gameDisplay):
         new_bird = Bird(gameDisplay)
@@ -129,7 +144,6 @@ class BirdCollection:
 
         return num_alive
 
-    
     def evolve_population(self):
         for b in self.birds:
             b.fitness += b.time_lived * PIPE_SPEED
@@ -146,7 +160,9 @@ class BirdCollection:
 
         new_birds = []
 
-        idx_bad_to_take = np.random.choice(np.arange(len(bad_birds)), num_bad_to_take, replace=False)
+        idx_bad_to_take = np.random.choice(
+            np.arange(len(bad_birds)), num_bad_to_take, replace=False
+        )
 
         for index in idx_bad_to_take:
             new_birds.append(bad_birds[index])
@@ -156,14 +172,20 @@ class BirdCollection:
         children_needed = len(self.birds) - len(new_birds)
 
         while len(new_birds) < len(self.birds):
-            idx_to_breed = np.random.choice(np.arange(len(good_birds)), 2, replace=False)
+            idx_to_breed = np.random.choice(
+                np.arange(len(good_birds)), 2, replace=False
+            )
             if idx_to_breed[0] != idx_to_breed[1]:
-                new_bird = Bird.create_offspring(good_birds[idx_to_breed[0]], good_birds[idx_to_breed[1]], self.gameDisplay)
+                new_bird = Bird.create_offspring(
+                    good_birds[idx_to_breed[0]],
+                    good_birds[idx_to_breed[1]],
+                    self.gameDisplay,
+                )
                 if random.random() < MUTATION_MODIFY_CHANCE_LIMIT:
                     new_bird.nnet.modify_weights()
                 new_birds.append(new_bird)
 
         for b in new_birds:
-            b.reset();
+            b.reset()
 
         self.birds = new_birds
