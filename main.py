@@ -62,7 +62,7 @@ def run_game():
         if num_alive == 0:
             pipes.create_new_set()
             game_time = 0
-            birds.create_new_generation()
+            birds.evolve_population()
             num_iterations += 1
 
         update_data_labels(

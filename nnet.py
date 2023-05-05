@@ -41,11 +41,13 @@ class Nnet:
             net1.weight_hidden_output, net2.weight_hidden_output
         )
 
+    @staticmethod
     def modify_array(a):
         for x in np.nditer(a, op_flags=["readwrite"]):
             if random.random() < MUTATION_WEIGHT_MODIFY_CHANCE:
                 x[...] = np.random.random_sample() - 0.5
-
+ 
+    @staticmethod
     def get_mix_from_arrays(ar1, ar2):
         total_entries = ar1.size
         num_rows = ar1.shape[0]
@@ -53,9 +55,6 @@ class Nnet:
 
         num_to_take = total_entries - int(total_entries * MUTATION_ARRAY_MIX_PERC)
         idx = np.random.choice(np.arange(total_entries), num_to_take, replace=False)
-
-        print("idx", idx)
-
         res = np.random.rand(num_rows, num_cols)
 
         for row in range(0, num_rows):
